@@ -5,6 +5,7 @@ import {
   timestampRouter,
   requestHeaderParserRouter,
   urlShortenerRouter,
+  exerciseTrackerRouter,
 } from "./src/routes/routes";
 import { Connect } from "./src/db.connection/connection";
 
@@ -17,6 +18,7 @@ app.use(cors());
 
 app.use("/api", requestHeaderParserRouter);
 app.use("/api", urlShortenerRouter);
+app.use("/api", exerciseTrackerRouter);
 app.use("/api", timestampRouter);
 
 Connect();
