@@ -1,15 +1,26 @@
-import mongoose, { Schema, InferSchemaType, Types } from "mongoose";
+import mongoose, {
+  Schema,
+  InferSchemaType,
+  Types,
+  Document,
+  SchemaDefinitionProperty,
+} from "mongoose";
 
-const logSchema = new Schema({
-  count: { type: Number, default: 0 },
-  userId: { type: Types.ObjectId, required: true, unique: true },
-  log: {
-    type: [{ description: String, duration: Number, date: String }],
-    default: [],
-  },
+export interface ILog extends Document {
+  userId: Types.ObjectId | SchemaDefinitionProperty;
+  description: string;
+  duration: number;
+  date: Date;
+}
+
+const logSchema = new Schema<ILog>({
+  userId: { type: Types.ObjectId, required: true },
+  description: { type: String, required: true },
+  duration: { type: Number, required: true },
+  date: { type: Date, required: true },
 });
 
-const logModel = mongoose.model("logs", logSchema);
+const logModel = mongoose.model<ILog>("logs", logSchema);
 
 export type logModelType = InferSchemaType<typeof logSchema>;
 export default logModel;

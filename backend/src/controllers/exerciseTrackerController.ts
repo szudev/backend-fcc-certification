@@ -2,10 +2,14 @@ import { Request, Response } from "express";
 import {
   createExercise,
   createUser,
+  getUserLogById,
   getUsers,
 } from "../services/exerciseTrackerService";
 import { isValidObjectId } from "mongoose";
-import { validateExerciseDateFormat } from "../lib/utils";
+import {
+  formatStringToExerciseDate,
+  validateExerciseDateFormat,
+} from "../lib/utils";
 
 export async function createNewUser(req: Request, res: Response) {
   try {
@@ -86,11 +90,13 @@ export async function createNewExercise(req: Request, res: Response) {
       }
     }
 
+    const formattedDate = date ? formatStringToExerciseDate(date) : undefined;
+
     const [error, newExercise] = await createExercise({
       _id,
       description,
       duration,
-      date,
+      date: formattedDate,
     });
 
     if (error) return res.status(400).json({ error: error.message });
@@ -107,13 +113,22 @@ export async function createNewExercise(req: Request, res: Response) {
 export async function getUserLog(req: Request, res: Response) {
   try {
     const { _id } = req.params;
+    const { from, to, limit } = req.query;
 
     if (!isValidObjectId(_id)) {
       return res.status(400).json({ error: "The given id isn't a valid id." });
     }
 
-    //const [error, userLog] = await
-    return res.status(200).json({ _id });
+    const [error, userLog] = await getUserLogById({
+      _id,
+      from: from ? (from as string) : undefined,
+      limit: limit ? (limit as string) : undefined,
+      to: to ? (to as string) : undefined,
+    });
+
+    if (error) return res.status(400).json({ error: error.message });
+
+    return res.status(200).json(userLog);
   } catch (error) {
     return res.status(500).json({
       error:

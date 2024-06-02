@@ -27,6 +27,19 @@ export function validateExerciseDateFormat(date: string) {
 
 export function createCurrentDateAndFormat() {
   const currentDate = new Date();
-  const formattedDate = format(currentDate, "yyyy-MM-dd");
+  const formattedDateStr = format(currentDate, "yyyy-MM-dd");
+  const formattedDate = parse(formattedDateStr, "yyyy-MM-dd", new Date());
+  return formattedDate;
+}
+
+export function formatStringToExerciseDate(dateString: string): Date {
+  const format = "yyyy-MM-dd";
+  const date = parse(dateString, format, new Date());
+  return date;
+}
+
+export function formatExerciseDateToString(date: Date): string {
+  const formatStr = "EEE MMM dd yyyy";
+  const formattedDate = format(date, formatStr);
   return formattedDate;
 }

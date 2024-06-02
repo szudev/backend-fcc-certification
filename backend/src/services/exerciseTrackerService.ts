@@ -1,47 +1,40 @@
 import userModel from "../models/users";
 import exerciseModel from "../models/exercises";
-import logModel from "../models/logs";
+import logModel, { ILog } from "../models/logs";
 import {
   createExerciseResult,
   createUserResult,
   getUsersResult,
+  getUserLogByIdResult,
 } from "../types/db.services.types";
-import { createCurrentDateAndFormat } from "../lib/utils";
-import mongoose, { ClientSession } from "mongoose";
+import {
+  createCurrentDateAndFormat,
+  formatExerciseDateToString,
+  formatStringToExerciseDate,
+} from "../lib/utils";
+import mongoose, { ClientSession, Types } from "mongoose";
 
 type CreateExerciseProps = {
   _id: string;
   description: string;
   duration: number;
-  date?: string | undefined;
+  date?: Date | undefined;
+};
+
+type GetUserLogByIdProps = {
+  _id: string;
+  from?: string | undefined;
+  to?: string | undefined;
+  limit?: string | undefined;
 };
 
 export async function createUser(username: string): Promise<createUserResult> {
-  let session: ClientSession | null = null;
-
   try {
-    //We start a transaction
-    session = await mongoose.startSession();
-    session.startTransaction();
-
     const newUser = await userModel.create({ username });
     await newUser.save();
 
-    const newLog = await logModel.create({ userId: newUser._id.toString() });
-    await newLog.save();
-
-    //We finish the transaction
-    await session.commitTransaction();
-    session.endSession();
-
     return [undefined, newUser];
   } catch (error) {
-    if (session) {
-      //If any error happen, we abort the transaction
-      //to prevent any unfinished operations
-      await session.abortTransaction();
-      session.endSession();
-    }
     return [
       new Error(
         error instanceof Error
@@ -98,35 +91,18 @@ export async function createExercise({
     });
     await newExercise.save();
 
-    const updateOperation = await logModel.updateOne(
-      { userId: foundUser._id },
-      {
-        $inc: { count: 1 },
-        $push: {
-          log: {
-            description: newExercise.description,
-            duration: newExercise.duration,
-            date: newExercise.date,
-          },
-        },
-      }
-    );
-
-    if (updateOperation.modifiedCount === 0) {
-      await session.commitTransaction();
-      session.endSession();
-      return [
-        new Error(
-          "An unexpected error occurred when trying to add the exercise to the user log."
-        ),
-        undefined,
-      ];
-    }
+    const newLog = await logModel.create({
+      userId: _id,
+      description: newExercise.description,
+      duration: newExercise.duration,
+      date: newExercise.date,
+    });
+    await newLog.save();
 
     const formattedExercise = {
       _id: newExercise.userId.toString(),
       username: foundUser.username,
-      date: newExercise.date,
+      date: formatExerciseDateToString(newExercise.date),
       duration,
       description,
     };
@@ -143,7 +119,7 @@ export async function createExercise({
       await session.abortTransaction();
       session.endSession();
     }
-    [
+    return [
       new Error(
         error instanceof Error
           ? error.message
@@ -154,11 +130,50 @@ export async function createExercise({
   }
 }
 
-export async function getUserLogById(id: string) {
+export async function getUserLogById({
+  _id,
+  from,
+  limit,
+  to,
+}: GetUserLogByIdProps): Promise<getUserLogByIdResult> {
   try {
-    return id;
+    const userToFind = await userModel.findById(_id);
+
+    if (!userToFind)
+      return [
+        new Error(`The user with the id: ${_id} doesnt exist.`),
+        undefined,
+      ];
+
+    const fromDate: Date = from ? formatStringToExerciseDate(from) : undefined;
+    const toDate: Date = to ? formatStringToExerciseDate(to) : undefined;
+
+    const pipeline = [
+      { $match: { userId: new Types.ObjectId(_id) } },
+      ...(fromDate ? [{ $match: { date: { $gte: fromDate } } }] : []),
+      ...(toDate ? [{ $match: { date: { $lte: toDate } } }] : []),
+      ...(limit ? [{ $limit: Number(limit) }] : []),
+    ];
+
+    const userLogs: Array<ILog> = await logModel.aggregate(pipeline);
+    const formarttedUserLogs = userLogs.map((log) => {
+      return {
+        description: log.description,
+        duration: log.duration,
+        date: formatExerciseDateToString(log.date),
+      };
+    });
+
+    const formattedLog = {
+      username: userToFind.username,
+      count: userLogs.length,
+      _id: _id,
+      log: formarttedUserLogs,
+    };
+
+    return [undefined, formattedLog];
   } catch (error) {
-    [
+    return [
       new Error(
         error instanceof Error
           ? error.message
