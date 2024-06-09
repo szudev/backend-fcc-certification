@@ -1,0 +1,54 @@
+version: "3.9"
+
+services:
+  mongodb:
+    image: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=adminpass123
+    networks:
+      - shared-network
+
+  backend:
+    container_name: project_api
+    restart: unless-stopped
+    image: node_api:20
+    env_file:
+      - path: ./backend/.docker.env
+    environment:
+      - CONNECTION_STRING=${CONNECTION_STRING}
+    build:
+      context: backend
+      target: production
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    networks:
+      - shared-network
+    depends_on:
+      - mongodb
+
+  client:
+    container_name: project_client
+    restart: unless-stopped
+    image: vite_react:1.0.0
+    env_file:
+      - path: ./frontend/.docker.env
+    environment:
+      - VITE_API_HOST=${VITE_API_HOST}
+    build:
+      context: frontend
+      target: production
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    networks:
+      - shared-network
+    depends_on:
+      - backend
+
+networks:
+  shared-network:
