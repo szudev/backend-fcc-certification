@@ -29,5 +29,5 @@ COPY --from=build /usr/src/client/dist /usr/src/client/dist
 
 EXPOSE 5173
 
-CMD ["pnpm", "start"]
+CMD ["pnpm", "run", "start"]
 

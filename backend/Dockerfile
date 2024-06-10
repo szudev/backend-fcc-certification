@@ -29,5 +29,5 @@ COPY --from=build /usr/src/api/dist /usr/src/api/dist
 
 EXPOSE 3000
 
-CMD ["pnpm", "start"]
+CMD ["pnpm", "run", "start"]
 
