@@ -17,12 +17,12 @@ services:
     restart: unless-stopped
     image: node_api:20
     env_file:
-      - path: ./backend/.docker.env
+      - .env
     environment:
       - CONNECTION_STRING=${CONNECTION_STRING}
     build:
       context: backend
-      target: production
+      target: build
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
@@ -36,12 +36,12 @@ services:
     restart: unless-stopped
     image: vite_react:1.0.0
     env_file:
-      - path: ./frontend/.docker.env
+      - .env
     environment:
       - VITE_API_HOST=${VITE_API_HOST}
     build:
       context: frontend
-      target: production
+      target: build
       dockerfile: Dockerfile
     ports:
       - "5173:5173"
