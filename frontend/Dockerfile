@@ -1,42 +1,33 @@
-# Use a base image with Node.js
 FROM node:20-slim AS base
 
-# Set environment variables
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 ENV VITE_API_HOST=${VITE_API_HOST}
 
-# Enable corepack (pnpm)
-RUN corepack enable
+RUN corepack enable && corepack prepare pnpm@9.2.0 --activate
 
-# Set the working directory
 WORKDIR /usr/src/client
 
-# Copy package.json and pnpm-lock.yaml
 COPY package.json pnpm-lock.yaml ./
 
-# Install dependencies
 FROM base AS prod-deps
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
 
-# Install all dependencies including devDependencies and build the project
 FROM base AS build
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 COPY . .
 RUN pnpm run build
 
-# Final stage: copy built files and production dependencies
 FROM node:20-slim AS final
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
+RUN corepack enable && corepack prepare pnpm@9.2.0 --activate
 
 WORKDIR /usr/src/client
 COPY --from=prod-deps /usr/src/client/node_modules /usr/src/client/node_modules
 COPY --from=build /usr/src/client/dist /usr/src/client/dist
 
-# Expose the port
 EXPOSE 5173
 
-# Start the application
 CMD ["pnpm", "start"]
+
