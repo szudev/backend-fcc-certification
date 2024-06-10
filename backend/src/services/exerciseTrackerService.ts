@@ -145,8 +145,8 @@ export async function getUserLogById({
         undefined,
       ];
 
-    const fromDate: Date = from ? formatStringToExerciseDate(from) : undefined;
-    const toDate: Date = to ? formatStringToExerciseDate(to) : undefined;
+    const fromDate = from ? formatStringToExerciseDate(from) : undefined;
+    const toDate = to ? formatStringToExerciseDate(to) : undefined;
 
     const pipeline = [
       { $match: { userId: new Types.ObjectId(_id) } },

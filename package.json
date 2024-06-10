@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "pnpm --filter '**' build",
     "dev": "pnpm --filter '**' dev",
+    "start": "pnpm --filter '**' start",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
   },

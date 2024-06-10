@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { IFile } from "../types/express/index";
 
 interface MulterRequest extends Request {
-  file: IFile;
+  file?: IFile;
 }
 
 export function fileAnalyze(req: MulterRequest, res: Response) {

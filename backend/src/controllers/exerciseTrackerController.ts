@@ -26,6 +26,8 @@ export async function createNewUser(req: Request, res: Response) {
     const [error, newUser] = await createUser(username);
 
     if (error) return res.status(400).json({ error: error.message });
+    if (!newUser) return res.status(401).json({ error: "User was not found." });
+
     return res
       .status(201)
       .json({ username: newUser.username, _id: newUser._id.toString() });
@@ -41,6 +43,11 @@ export async function getAllUsers(req: Request, res: Response) {
   try {
     const [error, users] = await getUsers();
     if (error) return res.status(400).json({ error: error.message });
+    if (!users)
+      return res
+        .status(401)
+        .json({ error: "There was an error getting the users." });
+
     const formattedUsers = users.map((user) => {
       return { username: user.username, _id: user._id.toString() };
     });

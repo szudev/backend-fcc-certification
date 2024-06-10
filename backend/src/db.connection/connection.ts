@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 export const Connect = async () => {
   await mongoose
-    .connect(process.env.CONNECTION_STRING)
+    .connect(process.env.CONNECTION_STRING as string)
     .then(() => {
       console.log({
         status: "Connected",

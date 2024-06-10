@@ -1,6 +1,6 @@
 export {};
 
-export interface IFile {
+export interface IFile extends Express.Multer.File {
   fieldname: string;
   originalname: string;
   encoding: string;
@@ -12,7 +12,7 @@ export interface IFile {
 declare global {
   namespace Express {
     interface Request {
-      file?: IFile;
+      file?: IFile | undefined;
     }
   }
 }
