@@ -21,7 +21,7 @@ export function urlShortener(req: Request, res: Response) {
 
     if (!valid) {
       console.log({ valid, originalUrl });
-      return res.status(400).json({ error: "invalid url" });
+      return res.status(401).json({ error: "invalid url" });
     }
 
     if (!urlObject) throw new Error("Error on validating the URL");
@@ -29,11 +29,11 @@ export function urlShortener(req: Request, res: Response) {
     dns.lookup(urlObject.hostname, async (err) => {
       if (err) {
         console.log({ error: err, originalUrl });
-        return res.status(400).json({ error: "invalid url" });
+        return res.status(402).json({ error: "invalid url" });
       }
 
       const [error, searchedUrl] = await findUrl(urlObject);
-      if (error) return res.status(400).json({ error: error.message });
+      if (error) return res.status(403).json({ error: error.message });
 
       if (searchedUrl) {
         return res.status(200).json({
@@ -43,7 +43,7 @@ export function urlShortener(req: Request, res: Response) {
       } else {
         const [error, savedUrl] = await saveNewUrl(urlObject);
 
-        if (error) return res.status(400).json({ error: error.message });
+        if (error) return res.status(404).json({ error: error.message });
         if (!savedUrl)
           return res
             .status(401)
