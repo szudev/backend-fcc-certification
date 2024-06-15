@@ -9,7 +9,7 @@ export default async function UploadFile(
   try {
     const formData = new FormData();
     formData.append("file", file);
-
+    console.log({ env: API_HOST });
     const response = await fetch(`${API_HOST}/api/fileanalyse`, {
       method: "POST",
       body: formData,

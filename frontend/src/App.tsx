@@ -40,6 +40,7 @@ function App() {
 
     if (error) {
       toast.error(error.message);
+      setCurrentState(FILE_UPLOAD_STATES.READY_UPLOAD);
       return;
     }
 
