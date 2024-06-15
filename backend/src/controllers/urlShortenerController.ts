@@ -9,7 +9,7 @@ import {
 
 export function urlShortener(req: Request, res: Response) {
   try {
-    const originalUrl = req.body.URL;
+    const originalUrl = req.body.url;
 
     if (!originalUrl) {
       return res
