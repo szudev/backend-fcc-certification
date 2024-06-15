@@ -12,8 +12,9 @@ export function urlShortener(req: Request, res: Response) {
     const originalUrl = req.body.url;
 
     if (!originalUrl) {
+      console.log({ originalUrl, redBody: req.body });
       return res
-        .status(400)
+        .status(401)
         .json({ error: "An URL is needed in the request body." });
     }
 
@@ -21,7 +22,7 @@ export function urlShortener(req: Request, res: Response) {
 
     if (!valid) {
       console.log({ valid, originalUrl });
-      return res.status(401).json({ error: "invalid url" });
+      return res.status(400).json({ error: "invalid url" });
     }
 
     if (!urlObject) throw new Error("Error on validating the URL");
