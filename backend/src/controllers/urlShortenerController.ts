@@ -20,6 +20,7 @@ export function urlShortener(req: Request, res: Response) {
     const { valid, urlObject } = validateUrl(originalUrl);
 
     if (!valid) {
+      console.log({ valid, originalUrl });
       return res.status(400).json({ error: "invalid url" });
     }
 
@@ -27,6 +28,7 @@ export function urlShortener(req: Request, res: Response) {
 
     dns.lookup(urlObject.hostname, async (err) => {
       if (err) {
+        console.log({ error: err, originalUrl });
         return res.status(400).json({ error: "invalid url" });
       }
 
