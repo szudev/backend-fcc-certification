@@ -8,7 +8,7 @@ export default async function UploadFile(
 ): Promise<UploadFileReturnType> {
   try {
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("upfile", file);
     const response = await fetch(`${API_HOST}/api/fileanalyse`, {
       method: "POST",
       body: formData,
