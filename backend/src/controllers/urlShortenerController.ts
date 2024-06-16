@@ -5,7 +5,7 @@ import {
   findUrlById,
   saveNewUrl,
 } from "../services/urlShortenerServices";
-import urlparser from "url";
+import { validateUrl } from "../lib/utils";
 
 export function urlShortener(req: Request, res: Response) {
   try {
@@ -17,17 +17,17 @@ export function urlShortener(req: Request, res: Response) {
         .json({ error: "An URL is needed in the request body." });
     }
 
-    const parsedUrl = urlparser.parse(originalUrl).hostname;
+    const { urlObject, valid } = validateUrl(originalUrl);
 
-    if (!parsedUrl)
-      return res.status(400).json({ error: "The url cannot be parsed." });
+    if (!valid || !urlObject)
+      return res.status(400).json({ error: "invalid url" });
 
-    dns.lookup(parsedUrl, async (err, address) => {
-      if (err) {
+    dns.lookup(urlObject.hostname, async (err, address) => {
+      if (!address || err) {
         return res.status(400).json({ error: "invalid url" });
       }
 
-      const [error, searchedUrl] = await findUrl(address);
+      const [error, searchedUrl] = await findUrl(originalUrl);
       if (error) return res.status(400).json({ error: error.message });
 
       if (searchedUrl) {
@@ -36,7 +36,7 @@ export function urlShortener(req: Request, res: Response) {
           short_url: searchedUrl._id,
         });
       } else {
-        const [error, savedUrl] = await saveNewUrl(address);
+        const [error, savedUrl] = await saveNewUrl(originalUrl);
 
         if (error) return res.status(400).json({ error: error.message });
         if (!savedUrl)
