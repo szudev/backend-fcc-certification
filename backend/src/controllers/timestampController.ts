@@ -15,12 +15,15 @@ export function parseTimestamp(req: Request, res: Response) {
     const parsedDate = Date.parse(date);
 
     if (!isNaN(parsedDate)) {
+      console.log({ path: "first", parsedDate, date });
       return res.status(400).json({ error: "Invalid Date" });
     }
 
     const isValidUnixNumber = /^[0-9]+$/.test(date);
-    if (!isValidUnixNumber)
+    if (!isValidUnixNumber) {
+      console.log({ path: "second", isValidUnixNumber, date });
       return res.status(400).json({ error: "Invalid Date" });
+    }
 
     const toDate = new Date(parseInt(date));
     const unix = toDate.valueOf();
