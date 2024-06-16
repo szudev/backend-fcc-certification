@@ -1,40 +1,34 @@
 import { Request, Response } from "express";
-import { validateUrl } from "../lib/utils";
 import dns from "dns";
 import {
   findUrl,
   findUrlById,
   saveNewUrl,
 } from "../services/urlShortenerServices";
+import urlparser from "url";
 
 export function urlShortener(req: Request, res: Response) {
   try {
     const originalUrl = req.body.url;
 
-    if (!originalUrl) {
-      console.log({ originalUrl, redBody: req.body });
+    if (!originalUrl || typeof originalUrl !== "string") {
       return res
-        .status(401)
+        .status(400)
         .json({ error: "An URL is needed in the request body." });
     }
 
-    const { valid, urlObject } = validateUrl(originalUrl);
+    const parsedUrl = urlparser.parse(originalUrl).hostname;
 
-    if (!valid) {
-      console.log({ valid, originalUrl });
-      return res.status(400).json({ error: "invalid url" });
-    }
+    if (!parsedUrl)
+      return res.status(400).json({ error: "The url cannot be parsed." });
 
-    if (!urlObject) throw new Error("Error on validating the URL");
-
-    dns.lookup(urlObject.hostname, async (err) => {
+    dns.lookup(parsedUrl, async (err, address) => {
       if (err) {
-        console.log({ error: err, originalUrl });
-        return res.status(402).json({ error: "invalid url" });
+        return res.status(400).json({ error: "invalid url" });
       }
 
-      const [error, searchedUrl] = await findUrl(urlObject);
-      if (error) return res.status(403).json({ error: error.message });
+      const [error, searchedUrl] = await findUrl(address);
+      if (error) return res.status(400).json({ error: error.message });
 
       if (searchedUrl) {
         return res.status(200).json({
@@ -42,15 +36,15 @@ export function urlShortener(req: Request, res: Response) {
           short_url: searchedUrl._id,
         });
       } else {
-        const [error, savedUrl] = await saveNewUrl(urlObject);
+        const [error, savedUrl] = await saveNewUrl(address);
 
-        if (error) return res.status(404).json({ error: error.message });
+        if (error) return res.status(400).json({ error: error.message });
         if (!savedUrl)
           return res
-            .status(401)
+            .status(400)
             .json({ error: "Error on retriving the saved url" });
 
-        return res.status(201).json({
+        return res.status(200).json({
           original_url: savedUrl.originalUrl,
           short_url: savedUrl._id,
         });

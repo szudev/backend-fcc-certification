@@ -1,7 +1,7 @@
 import urlModel from "../models/urls";
 import { findUrlResult, saveNewUrlResult } from "../types/db.services.types";
 
-export async function findUrl(url: URL): Promise<findUrlResult> {
+export async function findUrl(url: string): Promise<findUrlResult> {
   try {
     const searchedUrl = await urlModel.findOne({ originalUrl: url });
     if (!searchedUrl) return [undefined, undefined];
@@ -18,7 +18,7 @@ export async function findUrl(url: URL): Promise<findUrlResult> {
   }
 }
 
-export async function saveNewUrl(url: URL): Promise<saveNewUrlResult> {
+export async function saveNewUrl(url: string): Promise<saveNewUrlResult> {
   try {
     const savedUrl = await urlModel.create({ originalUrl: url });
     await savedUrl.save();
