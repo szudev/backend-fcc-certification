@@ -9,6 +9,7 @@ import {
   filMetadataRouter,
 } from "./src/routes/routes";
 import { Connect } from "./src/db.connection/connection";
+import { renderPage } from "./src/controllers/fileMetadataController";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -19,7 +20,7 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/public", express.static(process.cwd() + "/public"));
-
+app.use("/", renderPage);
 app.use("/api", requestHeaderParserRouter);
 app.use("/api", urlShortenerRouter);
 app.use("/api", exerciseTrackerRouter);
