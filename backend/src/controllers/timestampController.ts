@@ -30,6 +30,7 @@ export function parseTimestamp(req: Request, res: Response) {
 
     return res.status(200).json({ unix, utc });
   } catch (error) {
+    console.log({ path: "catch", error });
     return res.status(500).json({
       error: error instanceof Error ? error.message : "Unkown error.",
     });
