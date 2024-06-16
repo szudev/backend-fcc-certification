@@ -1,32 +1,30 @@
 import { Request, Response } from "express";
-import { isValid, format } from "date-fns";
-import { toZonedTime } from "date-fns-tz";
 
 export function parseTimestamp(req: Request, res: Response) {
   const { date } = req.params;
 
   try {
     if (!date || date === "") {
-      const nowDate = toZonedTime(new Date(), "Europe/London", {
-        timeZone: "GMT",
-      });
+      const nowDate = new Date();
       return res.status(200).json({
-        unix: nowDate.getTime(),
-        utc: format(nowDate, "EEE, dd MMM yyyy HH:mm:ss 'GMT'"),
+        unix: nowDate.valueOf(),
+        utc: nowDate.toUTCString(),
       });
     }
 
-    const parsedDate = new Date(parseInt(date));
+    const parsedDate = Date.parse(date);
 
-    if (!isValid(parsedDate)) {
+    if (isNaN(parsedDate)) {
       return res.status(400).json({ error: "Invalid Date" });
     }
 
-    const unix = parsedDate.getTime();
-    const utc = format(
-      toZonedTime(parsedDate, "Europe/London", { timeZone: "GMT" }),
-      "EEE, dd MMM yyyy HH:mm:ss 'GMT'"
-    );
+    const isValidUnixNumber = /^[0-9]+$/.test(date);
+    if (!isValidUnixNumber)
+      return res.status(400).json({ error: "Invalid Date" });
+
+    const toDate = new Date(parseInt(date));
+    const unix = toDate.valueOf();
+    const utc = toDate.toUTCString();
 
     return res.status(200).json({ unix, utc });
   } catch (error) {
