@@ -13,23 +13,23 @@ export function parseTimestamp(req: Request, res: Response) {
     }
 
     const parsedDate = Date.parse(date);
-
-    if (!isNaN(parsedDate)) {
-      console.log({ path: "first", parsedDate, date });
-      return res.status(400).json({ error: "Invalid Date" });
-    }
-
     const isValidUnixNumber = /^[0-9]+$/.test(date);
-    if (!isValidUnixNumber) {
-      console.log({ path: "second", isValidUnixNumber, date });
+
+    if (parsedDate) {
+      const toDate = new Date(date);
+      const unix = toDate.valueOf();
+      const utc = toDate.toUTCString();
+
+      return res.status(200).json({ unix, utc });
+    } else if (isNaN(parsedDate) && isValidUnixNumber) {
+      const toDate = new Date(parseInt(date));
+      const unix = toDate.valueOf();
+      const utc = toDate.toUTCString();
+
+      return res.status(200).json({ unix, utc });
+    } else {
       return res.status(400).json({ error: "Invalid Date" });
     }
-
-    const toDate = new Date(parseInt(date));
-    const unix = toDate.valueOf();
-    const utc = toDate.toUTCString();
-
-    return res.status(200).json({ unix, utc });
   } catch (error) {
     return res.status(500).json({
       error: error instanceof Error ? error.message : "Unkown error.",
