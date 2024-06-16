@@ -9,7 +9,6 @@ import {
   filMetadataRouter,
 } from "./src/routes/routes";
 import { Connect } from "./src/db.connection/connection";
-import path from "path";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -18,8 +17,6 @@ dotenv.config();
 app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
-
-app.use(express.static(path.join(__dirname, "public", "dist")));
 
 app.use("/api", requestHeaderParserRouter);
 app.use("/api", urlShortenerRouter);

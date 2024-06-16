@@ -54,7 +54,7 @@ function App() {
     toast.error("Unexpected error.");
   };
 
-  const disableInputCondition = currentState === FILE_UPLOAD_STATES.UPLOADING;
+  //const disableInputCondition = currentState === FILE_UPLOAD_STATES.UPLOADING;
   const disableSubmitCondition =
     currentState === (FILE_UPLOAD_STATES.IDLE || FILE_UPLOAD_STATES.UPLOADING);
 
@@ -84,7 +84,6 @@ function App() {
                 type="file"
                 name="upfile"
                 onChange={handleOnChange}
-                disabled={disableInputCondition}
               />
               <Button
                 id="button"
