@@ -7,6 +7,6 @@ const router = express.Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-router.post("/fileanalyse", upload.single("upfile"), fileAnalyze);
+router.post("/fileanalyse", upload.single("file"), fileAnalyze);
 
 export default router;
