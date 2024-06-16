@@ -12,7 +12,6 @@ export function urlShortener(req: Request, res: Response) {
     const originalUrl = req.body.url;
 
     if (!originalUrl || typeof originalUrl !== "string") {
-      console.log({ path: "first", originalUrl, body: req.body });
       return res
         .status(400)
         .json({ error: "An URL is needed in the request body." });
@@ -20,13 +19,12 @@ export function urlShortener(req: Request, res: Response) {
 
     dns.lookup(new URL(originalUrl).hostname, async (err, address) => {
       if (!address || err) {
-        console.log({ path: "second", originalUrl, body: req.body });
+        //IDK WHY THIS SHOULD RETURN A STATUS 200...
         return res.status(200).json({ error: "invalid url" });
       }
 
       const [error, searchedUrl] = await findUrl(originalUrl);
       if (error) {
-        console.log({ path: "third", originalUrl, error: error.message });
         return res.status(400).json({ error: error.message });
       }
 
@@ -39,7 +37,6 @@ export function urlShortener(req: Request, res: Response) {
         const [error, savedUrl] = await saveNewUrl(originalUrl);
 
         if (error) {
-          console.log({ path: "four", originalUrl, error: error.message });
           return res.status(400).json({ error: error.message });
         }
         if (!savedUrl)
