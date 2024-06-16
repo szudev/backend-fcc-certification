@@ -10,7 +10,7 @@ export function parseTimestamp(req: Request, res: Response) {
       const nowDate = toZonedTime(new Date(), "Europe/London", {
         timeZone: "GMT",
       });
-      return res.status(400).json({
+      return res.status(200).json({
         unix: nowDate.getTime(),
         utc: format(nowDate, "EEE, dd MMM yyyy HH:mm:ss 'GMT'"),
       });
@@ -30,7 +30,6 @@ export function parseTimestamp(req: Request, res: Response) {
 
     return res.status(200).json({ unix, utc });
   } catch (error) {
-    console.log({ path: "catch", error });
     return res.status(500).json({
       error: error instanceof Error ? error.message : "Unkown error.",
     });
