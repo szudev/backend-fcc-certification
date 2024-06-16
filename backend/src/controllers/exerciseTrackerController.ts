@@ -105,7 +105,7 @@ export async function createNewExercise(req: Request, res: Response) {
     const [error, newExercise] = await createExercise({
       _id,
       description,
-      duration,
+      duration: typeof duration === "string" ? Number(duration) : duration,
       date: formattedDate,
     });
 
@@ -125,10 +125,8 @@ export async function getUserLog(req: Request, res: Response) {
     const { _id } = req.params;
     const { from, to, limit } = req.query;
 
-    if (!isValidObjectId(_id)) {
-      console.log({ path: "first", _id });
+    if (!isValidObjectId(_id))
       return res.status(400).json({ error: "The given id isn't a valid id." });
-    }
 
     const [error, userLog] = await getUserLogById({
       _id,
@@ -137,10 +135,7 @@ export async function getUserLog(req: Request, res: Response) {
       to: to ? (to as string) : undefined,
     });
 
-    if (error) {
-      console.log({ path: "second", error });
-      return res.status(400).json({ error: error.message });
-    }
+    if (error) return res.status(400).json({ error: error.message });
 
     return res.status(200).json(userLog);
   } catch (error) {

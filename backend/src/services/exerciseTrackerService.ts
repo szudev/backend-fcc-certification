@@ -103,7 +103,7 @@ export async function createExercise({
       _id: newExercise.userId.toString(),
       username: foundUser.username,
       date: formatExerciseDateToString(newExercise.date),
-      duration,
+      duration: newLog.duration,
       description,
     };
 
