@@ -14,7 +14,7 @@ export function fileAnalyze(req: MulterRequest, res: Response) {
         .status(400)
         .json({ error: "A file is required in the form data." });
 
-    return res.status(200).json({
+    return res.json({
       name: file.originalname,
       type: file.mimetype,
       size: file.size,
@@ -28,5 +28,5 @@ export function fileAnalyze(req: MulterRequest, res: Response) {
 }
 
 export function renderPage(req: Request, res: Response) {
-  return res.sendFile(process.cwd() + "/views/index.html");
+  res.sendFile(process.cwd() + "/views/index.html");
 }

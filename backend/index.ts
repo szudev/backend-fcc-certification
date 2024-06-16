@@ -20,11 +20,11 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/public", express.static(process.cwd() + "/public"));
-app.use("/", renderPage);
 app.use("/api", requestHeaderParserRouter);
 app.use("/api", urlShortenerRouter);
 app.use("/api", exerciseTrackerRouter);
 app.use("/api", filMetadataRouter);
+app.use("/", renderPage);
 app.use("/api", timestampRouter);
 
 Connect();
