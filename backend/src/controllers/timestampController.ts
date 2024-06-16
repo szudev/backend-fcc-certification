@@ -14,7 +14,7 @@ export function parseTimestamp(req: Request, res: Response) {
 
     const parsedDate = Date.parse(date);
 
-    if (isNaN(parsedDate)) {
+    if (!isNaN(parsedDate)) {
       return res.status(400).json({ error: "Invalid Date" });
     }
 
