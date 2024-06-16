@@ -21,7 +21,7 @@ export function urlShortener(req: Request, res: Response) {
     dns.lookup(new URL(originalUrl).hostname, async (err, address) => {
       if (!address || err) {
         console.log({ path: "second", originalUrl, body: req.body });
-        return res.status(400).json({ error: "invalid url" });
+        return res.status(200).json({ error: "invalid url" });
       }
 
       const [error, searchedUrl] = await findUrl(originalUrl);
