@@ -24,8 +24,8 @@ app.use("/api", requestHeaderParserRouter);
 app.use("/api", urlShortenerRouter);
 app.use("/api", exerciseTrackerRouter);
 app.use("/api", filMetadataRouter);
-app.use("/", renderPage);
 app.use("/api", timestampRouter);
+app.use("/", renderPage);
 
 Connect();
 
