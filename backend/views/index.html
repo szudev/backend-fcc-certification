@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>File Metadata</title>
+    <link href="/public/style.css" rel="stylesheet" type="text/css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <h2>API Project: File Metadata Microservice</h2>
+      <p>Upload a file</p>
+      <div class="view">
+        <h4 id="output"></h4>
+        <form
+          enctype="multipart/form-data"
+          method="POST"
+          action="/api/fileanalyse"
+        >
+          <input id="inputfield" type="file" name="upfile" />
+          <input id="button" type="submit" value="Upload" />
+        </form>
+      </div>
+    </div>
+    <footer>
+      <p>
+        Made by
+        <a
+          href="https://github.com/szudev"
+          target="_blank"
+          rel="noopener noreferrer"
+          >szudev</a
+        >
+      </p>
+    </footer>
+  </body>
+</html>

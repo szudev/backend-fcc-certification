@@ -1,6 +1,6 @@
 import { ChangeEvent, FormEvent, useState } from "react";
 import FILE_UPLOAD_STATES, { FileUploadStateType } from "./context/states";
-//import Spinner from "./components/Spinner";
+import Spinner from "./components/Spinner";
 import UploadFile, { FileReturnFormat } from "./services/uploadFile";
 import { toast } from "sonner";
 import Button from "./components/Button";
@@ -54,16 +54,16 @@ function App() {
     toast.error("Unexpected error.");
   };
 
-  //const disableInputCondition = currentState === FILE_UPLOAD_STATES.UPLOADING;
-  //const disableSubmitCondition =
-  currentState === (FILE_UPLOAD_STATES.IDLE || FILE_UPLOAD_STATES.UPLOADING);
+  const disableInputCondition = currentState === FILE_UPLOAD_STATES.UPLOADING;
+  const disableSubmitCondition =
+    currentState === (FILE_UPLOAD_STATES.IDLE || FILE_UPLOAD_STATES.UPLOADING);
 
-  /* const BUTTOM_TEXT = {
+  const BUTTOM_TEXT = {
     [FILE_UPLOAD_STATES.IDLE]: "Without file",
     [FILE_UPLOAD_STATES.UPLOADING]: "Uploading",
     [FILE_UPLOAD_STATES.READY_UPLOAD]: "Upload",
     [FILE_UPLOAD_STATES.UPLOADED]: "Upload",
-  }; */
+  };
 
   return (
     <main className="min-h-[100svh] w-full gap-6 bg-black flex flex-col items-center justify-center p-4">
@@ -84,25 +84,20 @@ function App() {
                 type="file"
                 name="upfile"
                 onChange={handleOnChange}
+                disabled={disableInputCondition}
               />
-              {/* <Button
+              <Button
                 id="button"
                 type="submit"
                 name="Upload"
+                disabled={disableSubmitCondition}
                 className="flex items-center disabled:pointer-events-none justify-center gap-2 disabled:cursor-not-allowed hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg px-5 py-2.5 text-center me-2 mb-2 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800"
               >
                 {BUTTOM_TEXT[currentState]}{" "}
                 {currentState === FILE_UPLOAD_STATES.UPLOADING ? (
                   <Spinner />
                 ) : null}
-              </Button> */}
-              <input
-                id="button"
-                type="submit"
-                name="Upload"
-                value="Upload"
-                className="flex items-center disabled:pointer-events-none justify-center gap-2 disabled:cursor-not-allowed hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg px-5 py-2.5 text-center me-2 mb-2 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800"
-              />
+              </Button>
             </form>{" "}
           </>
         ) : data ? (
