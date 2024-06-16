@@ -5,7 +5,7 @@ import {
   findUrlById,
   saveNewUrl,
 } from "../services/urlShortenerServices";
-import { validateUrl } from "../lib/utils";
+import { URL } from "url";
 
 export function urlShortener(req: Request, res: Response) {
   try {
@@ -17,12 +17,7 @@ export function urlShortener(req: Request, res: Response) {
         .json({ error: "An URL is needed in the request body." });
     }
 
-    const { urlObject, valid } = validateUrl(originalUrl);
-
-    if (!valid || !urlObject)
-      return res.status(400).json({ error: "invalid url" });
-
-    dns.lookup(urlObject.hostname, async (err, address) => {
+    dns.lookup(new URL(originalUrl).hostname, async (err, address) => {
       if (!address || err) {
         return res.status(400).json({ error: "invalid url" });
       }
