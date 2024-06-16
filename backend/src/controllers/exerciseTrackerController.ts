@@ -65,21 +65,18 @@ export async function createNewExercise(req: Request, res: Response) {
     const { _id } = req.params;
     const { description, duration, date } = req.body;
 
-    if (!isValidObjectId(_id)) {
-      console.log({ path: "first", _id });
+    if (!isValidObjectId(_id))
       return res.status(400).json({ error: "The given id isn't a valid id." });
-    }
 
     if (date) {
       if (typeof date !== "string") {
-        console.log({ path: "second", date, typeDate: typeof date });
         return res.status(400).json({ error: "date must be a string." });
       }
-      if (!validateExerciseDateFormat(date))
-        console.log({ path: "third", date, typeDate: typeof date });
-      return res.status(400).json({
-        error: "The date must have the following format: yyyy-mm-dd",
-      });
+      if (!validateExerciseDateFormat(date)) {
+        return res.status(400).json({
+          error: "The date must have the following format: yyyy-mm-dd",
+        });
+      }
     }
 
     if (
@@ -89,13 +86,14 @@ export async function createNewExercise(req: Request, res: Response) {
       typeof duration !== "number"
     ) {
       if (!description || !duration) {
-        console.log({ path: "four", description, duration });
         return res.status(400).json({
           error: "A description and a duration must be in the form data.",
         });
       }
-      if (typeof description !== "string" || typeof duration !== "number") {
-        console.log({ path: "five", description, duration });
+      if (
+        typeof description !== "string" ||
+        (typeof duration !== "number" && isNaN(Number(duration)))
+      ) {
         return res.status(400).json({
           error: "Description must be a string, duration must be a number.",
         });
@@ -111,10 +109,7 @@ export async function createNewExercise(req: Request, res: Response) {
       date: formattedDate,
     });
 
-    if (error) {
-      console.log({ path: "six", error });
-      return res.status(400).json({ error: error.message });
-    }
+    if (error) return res.status(400).json({ error: error.message });
 
     return res.status(201).json(newExercise);
   } catch (error) {
@@ -131,6 +126,7 @@ export async function getUserLog(req: Request, res: Response) {
     const { from, to, limit } = req.query;
 
     if (!isValidObjectId(_id)) {
+      console.log({ path: "first", _id });
       return res.status(400).json({ error: "The given id isn't a valid id." });
     }
 
@@ -141,7 +137,10 @@ export async function getUserLog(req: Request, res: Response) {
       to: to ? (to as string) : undefined,
     });
 
-    if (error) return res.status(400).json({ error: error.message });
+    if (error) {
+      console.log({ path: "second", error });
+      return res.status(400).json({ error: error.message });
+    }
 
     return res.status(200).json(userLog);
   } catch (error) {
